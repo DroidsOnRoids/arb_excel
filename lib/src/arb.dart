@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:arb_excel/arb_excel.dart';
 import 'package:path/path.dart';
 
 /// To match all args from a text.
@@ -7,8 +9,22 @@ final _kRegArgs = RegExp(r'{(\w+)}');
 
 /// Parses .arb files to [Translation].
 /// The [filename] is the main language.
-Translation parseARB(String filename) {
-  throw UnimplementedError();
+
+void main() async {
+  final translations = await parseARB('example/intl_pl.arb');
+  writeExcel('example2', translations);
+  print('test');
+}
+
+Future<Map<String, dynamic>> parseARB(String filename) async {
+  try {
+    final buf = await File(filename).readAsString();
+    final map = jsonDecode(buf);
+    return map;
+  } catch (error) {
+    print(error);
+    throw Error();
+  }
 }
 
 /// Writes [Translation] to .arb files.

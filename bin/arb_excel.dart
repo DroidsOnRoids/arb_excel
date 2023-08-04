@@ -7,7 +7,7 @@ import 'package:arb_excel/arb_excel.dart';
 
 const _kVersion = '0.0.1';
 
-void main(List<String> args) {
+void main(List<String> args) async {
   final parse = ArgParser();
   parse.addFlag('new',
       abbr: 'n', defaultsTo: false, help: 'New translation sheet');
@@ -40,7 +40,7 @@ void main(List<String> args) {
 
   if (flags['excel']) {
     stdout.writeln('Generate Excel from: $filename');
-    final data = parseARB(filename);
+    final data = await parseARB(filename);
     writeExcel('${withoutExtension(filename)}.xlsx', data);
     exit(0);
   }
