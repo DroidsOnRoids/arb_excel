@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:arb_excel/src/assets.dart';
+import 'package:arb_excel_dor/src/assets.dart';
 import 'package:excel/excel.dart';
 import 'package:path/path.dart';
 
@@ -81,11 +81,11 @@ Translation parseExcel({
 }
 
 /// Writes a Excel file, includes all translations.
-void writeExcel(
+Future<void> writeExcel(
   String filename,
   Map<String, dynamic> data, {
   String sheetname = 'Text',
-}) {
+}) async {
   final excel = Excel.createExcel();
 
   excel.updateCell(sheetname, CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0), 'category');
@@ -116,7 +116,7 @@ void writeExcel(
     defaultSheet.setColAutoFit(3);
   }
 
-  final file = File('example/${withoutExtension(filename)}.xlsx');
+  final file = File('${withoutExtension(filename)}.xlsx');
   excel.delete('Sheet1');
-  file.writeAsBytes(excel.save(fileName: filename)!);
+  await file.writeAsBytes(excel.save(fileName: filename)!);
 }

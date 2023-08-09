@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:arb_excel/arb_excel.dart';
 import 'package:path/path.dart';
 
 /// To match all args from a text.
