@@ -10,12 +10,6 @@ final _kRegArgs = RegExp(r'{(\w+)}');
 /// Parses .arb files to [Translation].
 /// The [filename] is the main language.
 
-void main() async {
-  final translations = await parseARB('example/intl_pl.arb');
-  writeExcel('example2', translations);
-  print('test');
-}
-
 Future<Map<String, dynamic>> parseARB(String filename) async {
   try {
     final buf = await File(filename).readAsString();
@@ -34,7 +28,7 @@ void writeARB(String filename, Translation data) {
     final isDefault = i == 0;
     final f = File('${withoutExtension(filename)}_$lang.arb');
 
-    var buf = [];
+    List buf = [];
     for (final item in data.items) {
       final data = item.toJSON(lang, isDefault);
       if (data != null) {
@@ -64,13 +58,13 @@ class ARBItem {
 
   ARBItem({
     this.category,
-    required this.text,
+    this.text,
     this.description,
     this.translations = const {},
   });
 
   final String? category;
-  final String text;
+  final String? text;
   final String? description;
   final Map<String, String> translations;
 
@@ -79,36 +73,15 @@ class ARBItem {
     final value = translations[lang];
     if (value == null || value.isEmpty) return null;
 
-    final args = getArgs(value);
-    final hasMetadata = isDefault && (args.isNotEmpty || description != null);
-
     final List<String> buf = [];
-
-    if (hasMetadata) {
-      buf.add('  "$text": "$value",');
-      buf.add('  "@$text": {');
-
-      if (args.isEmpty) {
-        if (description != null) {
-          buf.add('    "description": "$description"');
-        }
-      } else {
-        if (description != null) {
-          buf.add('    "description": "$description",');
-        }
-
-        buf.add('    "placeholders": {');
-        final List<String> group = [];
-        for (final arg in args) {
-          group.add('      "$arg": {"type": "String"}');
-        }
-        buf.add(group.join(',\n'));
-        buf.add('    }');
-      }
-
-      buf.add('  }');
-    } else {
-      buf.add('  "$text": "$value"');
+    if (category != null) {
+      buf.add('  "@$category": {}');
+    }
+    if (text != null) {
+      final data = {text: value};
+      final jsonString = jsonEncode(data);
+      final jsonSubstring = jsonString.substring(1, jsonString.length - 1);
+      buf.add(jsonSubstring);
     }
 
     return buf.join('\n');

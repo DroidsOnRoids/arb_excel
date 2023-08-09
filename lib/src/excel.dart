@@ -27,13 +27,6 @@ void newTemplate(String filename) {
 /// Uses `arb_sheet -n path/to/file` to create a translation file
 /// from the template.
 
-// void main() async {
-//   final translations = parseExcel(filename: 'example/example.xlsx');
-//   print(translations.items.first);
-//   writeARB('${withoutExtension('example/example.xlsx')}.arb', translations);
-//   print(translations.items.first);
-// }
-
 Translation parseExcel({
   required String filename,
   String sheetname = 'Text',
@@ -42,7 +35,6 @@ Translation parseExcel({
 }) {
   final buf = File(filename).readAsBytesSync();
   final excel = Excel.decodeBytes(buf);
-  Excel.createExcel();
   final sheet = excel.sheets[sheetname];
   if (sheet == null) {
     return Translation();
@@ -50,46 +42,39 @@ Translation parseExcel({
 
   final List<ARBItem> items = [];
   final columns = sheet.rows[headerRow];
+  String? category;
   for (int i = valueRow; i < sheet.rows.length; i++) {
     final row = sheet.rows[i];
+    final currentCategory = row[_kColCategory]?.value?.toString();
+    category ??= currentCategory;
+    if (category != currentCategory) {
+      category = currentCategory;
+      final item = ARBItem(
+        category: category,
+        text: null,
+        description: null,
+        translations: {},
+      );
+      items.add(item);
+    }
+
     final item = ARBItem(
-      category: row[_kColCategory]?.value?.toString(),
+      category: null,
       text: row[_kColText]?.value?.toString() ?? '',
       description: row[_kColDescription]?.value?.toString(),
       translations: {},
     );
 
-    try {
-      for (int i = _kColValue; i < sheet.maxCols; i = i + 3) {
-        final lang = columns[i]?.value?.toString() ?? i.toString();
-        String translation = row[i]?.value?.toString() ?? '';
-        if (translation.contains('[plural]')) {
-          final one = row[i + 1]?.value?.toString();
-          final few = row[i + 2]?.value?.toString();
-          final other = row[i + 3]?.value?.toString();
-          String plurals = '';
-          if (one != null) {
-            plurals += ' one{$one}';
-          }
-          if (few != null) {
-            plurals += ' few{$few}';
-          }
-          if (other != null) {
-            plurals += ' other{$other}';
-          }
-          translation = translation.replaceAll('[plural]', '{count,plural,$plurals}');
-        }
-        item.translations[lang] = translation;
-      }
-    } catch (error) {
-      print(error);
+    for (int i = _kColValue; i < sheet.maxCols; i++) {
+      final lang = columns[i]?.value?.toString() ?? i.toString();
+      item.translations[lang] = row[i]?.value?.toString() ?? '';
     }
 
     items.add(item);
   }
 
   final languages = columns
-      .where((e) => e != null && e.colIndex >= _kColValue && (e.colIndex + 1) % 4 == 0)
+      .where((e) => e != null && e.colIndex >= _kColValue)
       .map<String>((e) => e?.value?.toString() ?? '')
       .toList();
   return Translation(languages: languages, items: items);
@@ -117,7 +102,10 @@ void writeExcel(
     final key = keys[i];
     final value = data[key];
 
-    if (key.contains('@')) {
+    if (key.contains('@@')) {
+      defaultSheet!.updateCell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1), key);
+      defaultSheet.updateCell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 1), value);
+    } else if (key.contains('@')) {
       defaultSheet!.updateCell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1), key);
     } else {
       defaultSheet!.updateCell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1), key);
@@ -127,7 +115,6 @@ void writeExcel(
     defaultSheet.setColAutoFit(1);
     defaultSheet.setColAutoFit(3);
   }
-
 
   final file = File('example/${withoutExtension(filename)}.xlsx');
   excel.delete('Sheet1');
