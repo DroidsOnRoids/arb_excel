@@ -3,38 +3,25 @@
 For reading, creating and updating ARB files from XLSX files.
 
 ## Install
-
+1. Download repo
+2. Use command below:
 ```bash
-pub global activate arb_excel
+dart pub global activate --source path <path>
 ```
+<Path> is your local path to the repo.
 
 ## Usage
 
+From ARB to Excel:
 ```bash
-pub global run arb_excel
-
-arb_sheet [OPTIONS] path/to/file/name
-
-OPTIONS
--n, --new      New translation sheet
--a, --arb      Export to ARB files
--e, --excel    Import ARB files to sheet
+dart pub global run arb_excel_dor -e <file_name.arb>
 ```
 
-Creates a XLSX template file.
+It will create excel file with your translations.
+It is recommended to remove language suffix from file name.
 
+From Excel to ARB:
 ```bash
-pub global run arb_excel -n app.xlsx
+dart pub global run arb_excel_dor -a <excel_file_name.xlsx>
 ```
-
-Generates ARB files from a XLSX file.
-
-```bash
-pub global run arb_excel -a app.xlsx
-```
-
-Creates a XLSX file from ARB files.
-
-```bash
-pub global run arb_excel -e app_en.arb
-```
+It is necessary to use that method while your directory is where the file is.
