@@ -1,6 +1,7 @@
 {
-    "@@locale": "en",
-    "company_name": "LLC",
-    "red_color": "Red",
-    "orange_color": "Orange"
+"@@locale":"en",
+"company_name":"LLC",
+"red_color":"Red",
+"green_color":"Green",
+"orange_color":"Orange"
 }

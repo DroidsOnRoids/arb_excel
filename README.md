@@ -14,7 +14,7 @@ dart pub global activate --source path <path>
 
 From ARB to Excel:
 ```bash
-dart pub global run arb_excel_dor -e <file_name.arb>
+dart pub global run arb_excel_dor -e <file_name1.arb> <file_name2.arb> …
 ```
 
 It will create excel file with your translations.

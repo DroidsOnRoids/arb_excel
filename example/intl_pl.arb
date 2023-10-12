@@ -1,6 +1,7 @@
 {
-    "@@locale":"pl",
-    "company_name":"S.A.",
-    "red_color":"Czerwony",
-    "orange_color":"Pomarańczowy"
+"@@locale":"pl",
+"company_name":"S.A.",
+"red_color":"Czerwony",
+"orange_color":"Pomarańczowy",
+"pink_color":"Różowy"
 }
