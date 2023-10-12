@@ -19,7 +19,6 @@ void main(List<String> args) async {
   }
 
   final filenames = flags.rest;
-  print(flags.rest);
 
   if (flags['arb']) {
     final filename = filenames.first;
@@ -31,10 +30,8 @@ void main(List<String> args) async {
 
   if (flags['excel']) {
     stdout.writeln('Generate Excel from: $filenames');
-    final List<Map<String, dynamic>> translations = [];
-    for (final filename in filenames) {
-      translations.add(await parseARB(filename));
-    }
+    final List<Map<String, dynamic>> translations =
+        await Future.wait(filenames.map((filename) async => await parseARB(filename)));
     stdout.writeln('ARB DATA PARSED');
     await writeExcel(filenames, translations);
     stdout.writeln('FINISHED');
