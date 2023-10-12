@@ -109,12 +109,7 @@ Future<void> writeExcel(
     } else if (key.contains('@')) {
       defaultSheet!.updateCell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1), key);
     } else {
-      _updateTranslationRow(
-        defaultSheet,
-        translationsDataList,
-        key,
-        i + 1,
-      );
+      _updateTranslationRow(defaultSheet, translationsDataList, key, i + 1);
     }
 
     defaultSheet!.setColAutoFit(1);
